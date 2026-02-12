@@ -1,0 +1,193 @@
+{
+  "info": {
+    "name": "Test Data Management API",
+    "description": "Collection for testing TDM tool endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Schema Management",
+      "item": [
+        {
+          "name": "Register User Schema",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schemaName\": \"User\",\n  \"description\": \"User entity with personal information\",\n  \"schemaDefinition\": \"public record User(String firstName, String lastName, String email, Integer age) {}\",\n  \"schemaType\": \"JAVA_CLASS\",\n  \"businessRules\": \"Age between 18-65, valid email format\",\n  \"active\": true,\n  \"createdBy\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schemas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "schemas"]
+            }
+          }
+        },
+        {
+          "name": "List All Schemas",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schemas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "schemas"]
+            }
+          }
+        },
+        {
+          "name": "List Active Schemas Only",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schemas?activeOnly=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "schemas"],
+              "query": [
+                {
+                  "key": "activeOnly",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Schema by Name",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/schemas/User",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "schemas", "User"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Data Generation",
+      "item": [
+        {
+          "name": "Generate User Data (Basic)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schemaName\": \"User\",\n  \"recordCount\": 10,\n  \"persistData\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/data/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "data", "generate"]
+            }
+          }
+        },
+        {
+          "name": "Generate User Data (With Constraints)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schemaName\": \"User\",\n  \"recordCount\": 5,\n  \"additionalConstraints\": {\n    \"location\": \"California only\",\n    \"age_range\": \"25-35\",\n    \"occupation\": \"Tech industry\"\n  },\n  \"temperature\": 0.8,\n  \"persistData\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/data/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "data", "generate"]
+            }
+          }
+        },
+        {
+          "name": "Generate Order Data",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"schemaName\": \"Order\",\n  \"recordCount\": 15,\n  \"additionalConstraints\": {\n    \"order_value\": \"Between $50 and $300\",\n    \"status\": \"Mix of CONFIRMED, SHIPPED, and DELIVERED\"\n  },\n  \"persistData\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/data/generate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "data", "generate"]
+            }
+          }
+        },
+        {
+          "name": "Quick Generate",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/data/quick-generate/User/5",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "data", "quick-generate", "User", "5"]
+            }
+          }
+        },
+        {
+          "name": "Get Generated Data by Batch ID",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/data/batch/{{batchId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "data", "batch", "{{batchId}}"]
+            }
+          }
+        },
+        {
+          "name": "Cleanup Expired Data",
+          "request": {
+            "method": "DELETE",
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/data/cleanup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "data", "cleanup"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/schemas/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "schemas", "health"]
+        }
+      }
+    }
+  ]
+}

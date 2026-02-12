@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database (Production)
+  postgres:
+    image: postgres:15-alpine
+    container_name: tdm-postgres
+    environment:
+      POSTGRES_DB: tdmdb
+      POSTGRES_USER: tdmuser
+      POSTGRES_PASSWORD: tdmpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tdmuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Ollama (Local LLM)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: tdm-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # TDM Application
+  tdm-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tdm-application
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tdmdb
+      SPRING_DATASOURCE_USERNAME: tdmuser
+      SPRING_DATASOURCE_PASSWORD: tdmpassword
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      SPRING_AI_OLLAMA_BASE_URL: http://ollama:11434
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/schemas/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+  ollama_data:
+    driver: local
