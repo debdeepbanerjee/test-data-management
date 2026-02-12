@@ -2,6 +2,10 @@
 
 An AI-powered test data management tool built with Spring Boot and Spring AI, enabling automatic generation of realistic, structured test data using Large Language Models.
 
+## Author
+
+- **Name**: Debdeep Banerjee
+
 ## 🚀 Features
 
 - **AI-Powered Data Generation**: Leverage OpenAI GPT-4 or local Ollama models for intelligent test data creation
